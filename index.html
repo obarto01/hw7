@@ -1,0 +1,265 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Jade Delight</title>
+<style type="text/css">
+</style>	
+</head>
+
+<body>
+<script language="javascript">
+function MenuItem(name, cost)
+{
+	this.name = name;
+	this.cost=cost;
+}
+
+menuItems = new Array(
+	new MenuItem("Chicken Chop Suey", 4.5),
+	new MenuItem("Sweet and Sour Pork", 6.25),
+	new MenuItem("Shrimp Lo Mein", 5.25),
+	new MenuItem("Moo Shi Chicken", 6.5),
+	new MenuItem("Fried Rice", 2.35)
+);
+
+function makeSelect(name, minRange, maxRange)
+{
+	var t= "";
+	t = "<select name='" + name + "' size='1'>";
+	for (j=minRange; j<=maxRange; j++)
+	   t += "<option>" + j + "</option>";
+	t+= "</select>"; 
+	return t;
+}
+
+function show()
+{
+	with(document.forms[0])
+	{
+		alert("Please Enter Your Phone Number in the Format: xxx-xxx-xxxx");
+		cost[0].value = 0.00;
+		cost[1].value = 0.00;
+		cost[2].value = 0.00;
+		cost[3].value = 0.00;
+		cost[4].value = 0.00;
+		quan0.addEventListener("change", showVal);
+		quan1.addEventListener("change", showVal);
+		quan2.addEventListener("change", showVal);
+		quan3.addEventListener("change", showVal);
+		quan4.addEventListener("change", showVal);
+	}
+}
+
+function showVal()
+{
+	with(document.forms[0])
+	{
+		var index;
+		if (this == quan0)
+		{
+			index = quan0.selectedIndex;
+			cost[0].value = (index*menuItems[0].cost).toFixed(2);
+			updateTotals();
+		}
+		else if (this == quan1)
+		{
+			index = quan1.selectedIndex;
+			cost[1].value = (index*menuItems[1].cost).toFixed(2);
+			updateTotals();
+		}
+		else if (this == quan2)
+		{
+			index = quan2.selectedIndex;
+			cost[2].value = (index*menuItems[2].cost).toFixed(2);
+			updateTotals();
+		}
+		else if (this == quan3)
+		{
+			index = quan3.selectedIndex;
+			cost[3].value = (index*menuItems[3].cost).toFixed(2);
+			updateTotals();
+		}
+		else if (this == quan4)
+		{
+			index = quan4.selectedIndex;
+			cost[4].value = (index*menuItems[4].cost).toFixed(2);
+			updateTotals();
+		}
+	}
+}
+
+function updateTotals(x)
+{
+	with(document.forms[0])
+	{	
+		subtotal.value = 0;
+		var sub_tot = parseFloat(cost[0].value) + parseFloat(cost[1].value) + 
+		parseFloat(cost[2].value) + parseFloat(cost[3].value) + 
+		parseFloat(cost[4].value);
+		var mass_tax = sub_tot*0.0625;
+		var tot = sub_tot + mass_tax;
+		sub_tot = sub_tot.toFixed(2);
+		mass_tax = mass_tax.toFixed(2);
+		tot = tot.toFixed(2);
+		subtotal.value = sub_tot;
+		tax.value = mass_tax;
+		total.value = tot;
+	}
+}	
+
+function validate()
+{
+	with(document.forms[0])
+	{
+		if (lname.value == "")
+		{
+			alert("Last Name is required");
+			lname_error.innerHTML = "Last Name is Required";
+			return false;
+		}
+		if (!chk_phone())
+		{
+			alert("Phone Number is Invalid");
+			phone_error.innerHTML = "Phone Number is Invalid";
+			return false;
+		}
+
+		if (p_or_d[1].checked)
+		{
+			if (street.value == "")
+			{
+				alert("Street Name Required");
+				street_error.innerHTML = "Street Name Required";
+				return false;
+			}
+			if (city.value == "")
+			{
+				alert("City is Required");
+				city_error.innerHTML = "City is Required";
+				return false;
+			}
+
+		}
+		var deliv_time = calc_deliv_time();
+		alert("Thank You For Your Order! Your Total is $" + total.value +
+		" and " + deliv_time);
+		return false;
+	}
+}
+
+function chk_phone()
+{
+	with(document.forms[0])
+	{
+		// Was able to do research online about regex
+		var reg = /\d{3}-\d{3}-\d{4}/;
+		return (phone.value != "" && reg.exec(phone.value));
+	}
+}
+
+function calc_deliv_time()
+{
+	with(document.forms[0])
+	{
+		var d = new Date();
+		var hour = (d.getHours())%12;
+		var minutes = d.getMinutes();
+		//alert("HOUR" + hour + "MINUTES" + minutes);
+		if (p_or_d[0].checked)
+		{
+			minutes +=15;
+			if (minutes >= 60)
+			{
+				minutes = minutes%60;
+				if (minutes < 10)
+				{
+					minutes = "0"+minutes;
+				}
+				hour = (hour+1)%12;
+				if (hour == 0)
+				{
+					hour = 12;
+				}
+			}
+			return ("your food will be ready at " + hour + ":" + minutes);
+		}
+		else
+		{
+			minutes +=30;
+			if (minutes >= 60)
+			{
+				minutes = minutes%60;
+				if (minutes < 10)
+				{
+					minutes = "0"+minutes;
+				}				
+				hour = (hour+1)%12;
+				if (hour == 0)
+				{
+					hour = 12;
+				}				
+			}
+			return ("your food will be delivered at " + hour + ":" + minutes);			
+		}
+	}
+}
+</script>
+
+<h1>Jade Delight</h1>
+<form onSubmit="return validate()">
+
+<p>First Name: <input type="text"  name='fname' /></p>
+<p>Last Name*:  <input type="text"  name='lname' /> 
+	<span id = "lname_error">&nbsp;</span></p>
+<p>Street: <input type="text"  name='street' />
+	<span id = "street_error">&nbsp;</span></p>
+<p>City: <input type="text"  name='city' />
+	<span id = "city_error">&nbsp;</span></p>
+<p>Phone*: <input type="text"  name='phone' />
+	<span id = "phone_error">&nbsp;</span></p>
+<p> 
+	<input type="radio"  name="p_or_d" value = "pickup" checked="checked"/>Pickup  
+	<input type="radio"  name='p_or_d' value = 'delivery'/>
+	Delivery
+</p>
+<table border="0" cellpadding="3">
+  <tr>
+    <th>Select Item</th>
+    <th>Item Name</th>
+    <th>Cost Each</th>
+    <th>Total Cost</th>
+  </tr>
+<script language="javascript">
+
+  var s = "";
+  for (i=0; i< menuItems.length; i++)
+  {
+	  s += "<tr><td>";
+	  s += makeSelect("quan" + i, 0, 10);
+	  s += "</td><td>" + menuItems[i].name + "</td>";
+	  s += "<td> $ " + menuItems[i].cost.toFixed(2) + "</td>";
+	  s += "<td>$<input type='text' name='cost'/></td></tr>";
+  }
+  document.writeln(s);
+</script>
+</table>
+<p>Subtotal: 
+   $<input type="text"  name='subtotal' id="subtotal" value="0.00"/>
+</p>
+<p>Mass tax 6.25%:
+  $ <input type="text"  name='tax' id="tax" value="0.00"/>
+</p>
+<p>Total: $ <input type="text"  name='total' id="total" value="0.00"/>
+</p>
+
+<input type = "submit" value = "Submit Order" />
+
+</form>
+
+<script language="javascript">
+	window.onload = show();
+</script>
+
+</body>
+</html>
